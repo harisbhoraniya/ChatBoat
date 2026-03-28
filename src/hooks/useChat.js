@@ -14,26 +14,32 @@ export function useChat(roomId, username) {
   const pollRef = useRef(null);
   const typeRef = useRef(null);
 
+  // ✅ SAFE CHECK
+  const isBrowser = typeof window !== "undefined";
+
   // 🔹 Load messages
   const loadMsgs = useCallback(() => {
+    if (!isBrowser) return [];
     try {
       return JSON.parse(localStorage.getItem(MSG_KEY(roomId)) || "[]");
     } catch {
       return [];
     }
-  }, [roomId]);
+  }, [roomId, isBrowser]);
 
   // 🔹 Update presence
   const updatePresence = useCallback(() => {
+    if (!isBrowser) return;
     try {
       const d = JSON.parse(localStorage.getItem(ONL_KEY(roomId)) || "{}");
       d[myId.current] = { username, ts: Date.now() };
       localStorage.setItem(ONL_KEY(roomId), JSON.stringify(d));
     } catch {}
-  }, [roomId, username]);
+  }, [roomId, username, isBrowser]);
 
   // 🔹 Clean inactive users
   const cleanPresence = useCallback(() => {
+    if (!isBrowser) return [];
     try {
       const d = JSON.parse(localStorage.getItem(ONL_KEY(roomId)) || "{}");
       const now = Date.now();
@@ -47,19 +53,22 @@ export function useChat(roomId, username) {
     } catch {
       return [];
     }
-  }, [roomId]);
+  }, [roomId, isBrowser]);
 
   // 🔹 Stop typing
   const stopTyping = useCallback(() => {
+    if (!isBrowser) return;
     try {
       const d = JSON.parse(localStorage.getItem(TYPE_KEY(roomId)) || "{}");
       delete d[myId.current];
       localStorage.setItem(TYPE_KEY(roomId), JSON.stringify(d));
     } catch {}
-  }, [roomId]);
+  }, [roomId, isBrowser]);
 
   // 🔹 Start typing
   const startTyping = useCallback(() => {
+    if (!isBrowser) return;
+
     try {
       const d = JSON.parse(localStorage.getItem(TYPE_KEY(roomId)) || "{}");
       d[myId.current] = { username, ts: Date.now() };
@@ -71,11 +80,12 @@ export function useChat(roomId, username) {
     typeRef.current = setTimeout(() => {
       stopTyping();
     }, 3000);
-  }, [roomId, username, stopTyping]);
+  }, [roomId, username, stopTyping, isBrowser]);
 
   // 🔹 Send message
   const sendMessage = useCallback(
     (text, replyTo = null, imageUrl = null) => {
+      if (!isBrowser) return;
       if (!text.trim() && !imageUrl) return;
 
       const msgs = loadMsgs();
@@ -96,12 +106,14 @@ export function useChat(roomId, username) {
 
       stopTyping();
     },
-    [roomId, username, loadMsgs, stopTyping],
+    [roomId, username, loadMsgs, stopTyping, isBrowser],
   );
 
   // 🔹 Add reaction
   const addReaction = useCallback(
     (msgId, emoji) => {
+      if (!isBrowser) return;
+
       const msgs = loadMsgs();
       const msg = msgs.find((m) => m.id === msgId);
       if (!msg) return;
@@ -119,20 +131,21 @@ export function useChat(roomId, username) {
       localStorage.setItem(MSG_KEY(roomId), JSON.stringify(msgs));
       setMessages([...msgs]);
     },
-    [roomId, loadMsgs],
+    [roomId, loadMsgs, isBrowser],
   );
 
   // 🔹 Clear messages
   const clearMessages = useCallback(() => {
+    if (!isBrowser) return;
     localStorage.removeItem(MSG_KEY(roomId));
     setMessages([]);
-  }, [roomId]);
+  }, [roomId, isBrowser]);
 
-  // 🔹 Main effect (polling)
+  // 🔹 Main effect
   useEffect(() => {
-    if (!roomId || !username) return;
+    if (!roomId || !username || !isBrowser) return;
 
-    const currentId = myId.current; // ✅ FIX
+    const currentId = myId.current;
 
     updatePresence();
     setMessages(loadMsgs());
@@ -158,16 +171,17 @@ export function useChat(roomId, username) {
 
     return () => {
       clearInterval(pollRef.current);
-
-      try {
-        const d = JSON.parse(localStorage.getItem(ONL_KEY(roomId)) || "{}");
-        delete d[currentId]; // ✅ FIX
-        localStorage.setItem(ONL_KEY(roomId), JSON.stringify(d));
-      } catch {}
-
       stopTyping();
     };
-  }, [roomId, username, updatePresence, cleanPresence, loadMsgs, stopTyping]);
+  }, [
+    roomId,
+    username,
+    updatePresence,
+    cleanPresence,
+    loadMsgs,
+    stopTyping,
+    isBrowser,
+  ]);
 
   return {
     messages,
