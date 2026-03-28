@@ -16,7 +16,6 @@ import EmojiPicker from "emoji-picker-react";
 import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
 import { useChat } from "../hooks/useChat";
-import { useLayoutEffect } from "react";
 
 export default function ChatScreen({ username, roomId, onLeave }) {
   const {
@@ -49,8 +48,16 @@ export default function ChatScreen({ username, roomId, onLeave }) {
     msgEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
   }, []);
 
+  const isNearBottom = () => {
+    const el = scrollRef.current;
+    if (!el) return true;
+    return el.scrollHeight - el.scrollTop - el.clientHeight < 100;
+  };
+
   useLayoutEffect(() => {
-    scrollBottom(false);
+    if (isNearBottom()) {
+      scrollBottom(false);
+    }
   }, [messages.length]);
 
   const onScroll = () => {

@@ -30,7 +30,7 @@ export default function JoinScreen({ onJoin }) {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-surface-50 via-brand-50 to-surface-100 p-4">
+    <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-surface-50 via-brand-50 to-surface-100 flex items-center justify-center">
       {/* Decorative blobs */}
       <div className="fixed top-0 left-0 w-72 h-72 rounded-full bg-brand-100 opacity-40 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="fixed bottom-0 right-0 w-96 h-96 rounded-full bg-brand-200 opacity-20 blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none" />
