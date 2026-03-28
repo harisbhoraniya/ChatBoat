@@ -146,12 +146,12 @@ export default function ChatScreen({ username, roomId, onLeave }) {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen w-full bg-gradient-to-br from-surface-50 via-brand-50 to-surface-100 p-2 md:p-4">
+    <div className="fixed inset-0 w-full h-full bg-gradient-to-br from-surface-50 via-brand-50 to-surface-100">
       {/* Blobs */}
       <div className="fixed top-0 left-0 w-72 h-72 rounded-full bg-brand-100 opacity-30 blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="fixed bottom-0 right-0 w-96 h-96 rounded-full bg-brand-200 opacity-15 blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
-      <div className="relative flex flex-col w-full max-w-2xl h-[92vh] md:h-[88vh] bg-white rounded-3xl shadow-chat border border-surface-200 overflow-hidden animate-scale-in">
+      <div className="relative flex flex-col w-full h-full bg-white overflow-hidden">
         {/* ── Header ── */}
         <header className="flex items-center justify-between px-5 py-3.5 border-b border-surface-100 bg-white/95 backdrop-blur-sm flex-shrink-0">
           <div className="flex items-center gap-3">
