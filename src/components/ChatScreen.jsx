@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from "react";
 import {
   FiSend,
   FiLogOut,
@@ -16,6 +16,7 @@ import EmojiPicker from "emoji-picker-react";
 import MessageBubble from "./MessageBubble";
 import TypingIndicator from "./TypingIndicator";
 import { useChat } from "../hooks/useChat";
+import { useLayoutEffect } from "react";
 
 export default function ChatScreen({ username, roomId, onLeave }) {
   const {
@@ -48,9 +49,9 @@ export default function ChatScreen({ username, roomId, onLeave }) {
     msgEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     scrollBottom(false);
-  }, [messages.length, scrollBottom]);
+  }, [messages.length]);
 
   const onScroll = () => {
     const el = scrollRef.current;
